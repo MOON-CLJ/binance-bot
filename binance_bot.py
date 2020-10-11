@@ -45,7 +45,9 @@ last_closing = most_recent[4]
 
 class Trade:
     def __init__(self, option):
+        setup_logger(option.symbol)
         logger.info(option)
+
         self.option = option
         self.client = Client(config.API_KEY, config.API_SECRET)
         self.commision = 0.0005
@@ -116,13 +118,16 @@ class Trade:
         if self.option.buyprice > 0 and buyPrice > self.option.buyprice:
             raise Exception(f"buyPrice {buyPrice} more than {self.option.buyprice}")
 
+        spreadPerc = (lastAsk / lastBid - 1) * 100.0
+        logger.info(
+            'price:%.8f buyprice:%.8f sellprice:%.8f bid:%.8f ask:%.8f spread:%.2f Originalsellprice:%.8f' % (
+                lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk,
+                spreadPerc, profitableSellingPrice - (lastBid * self.commision)))
+
         if lastPrice <= buyPrice:
-            spreadPerc = (lastAsk / lastBid - 1) * 100.0
-            logger.info(
-                'price:%.8f buyprice:%.8f sellprice:%.8f bid:%.8f ask:%.8f spread:%.2f Originalsellprice:%.8f' % (
-                    lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk,
-                    spreadPerc, profitableSellingPrice - (lastBid * self.commision)))
+            logger.info("Buy")
             self.buy(buyPrice, self.buy_quantity)
+            logger.info("Sell")
             self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
@@ -156,9 +161,9 @@ class Trade:
 
         # tickSize defines the intervals that a price/stopPrice can be increased/decreased by
         tickSize = float(self.filters['PRICE_FILTER']['tickSize'])
-        if tickSize < self.increasing:
+        if tickSize > self.increasing:
             self.increasing = tickSize
-        if tickSize < self.decreasing:
+        if tickSize > self.decreasing:
             self.decreasing = tickSize
 
         # set
