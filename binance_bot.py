@@ -62,14 +62,17 @@ class Trade:
         return lastBid + (lastBid * self.option.profit / 100) + (lastBid * self.commision)
 
     def get_exchange_info(self):
-        self.filters = self.client.get_exchange_info()[""]
+        exchange_info = self.client.get_exchange_info()
+        for symbol_info in exchange_info["symbols"]:
+            if symbol_info["symbol"] == self.option.symbol:
+                self.filters = symbol_info["filters"]
 
     def buy_order_confirm(self):
         cnt = 0
         while True:
             cnt += 1
             orders = self.client.get_open_orders(symbol=self.option.symbol)
-            time.sleep(self.wait_time * min(cnt, 10))
+            time.sleep(self.option.wait_time * min(cnt, 10))
             if not orders:
                 return
             if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'BUY']):
@@ -84,7 +87,7 @@ class Trade:
         while True:
             cnt += 1
             orders = self.client.get_open_orders(symbol=self.option.symbol)
-            time.sleep(self.wait_time * min(cnt, 10))
+            time.sleep(self.option.wait_time * min(cnt, 10))
             if not orders:
                 return
             if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'SELL']):
