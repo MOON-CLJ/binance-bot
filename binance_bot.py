@@ -116,13 +116,14 @@ class Trade:
         if self.option.buyprice > 0 and buyPrice > self.option.buyprice:
             raise Exception(f"buyPrice {buyPrice} more than {self.option.buyprice}")
 
-        spreadPerc = (lastAsk / lastBid - 1) * 100.0
-        logger.info(
-            'price:%.8f buyprice:%.8f sellprice:%.8f bid:%.8f ask:%.8f spread:%.2f Originalsellprice:%.8f' % (
-                lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk,
-                spreadPerc, profitableSellingPrice - (lastBid * self.commision)))
-        self.buy(buyPrice, self.buy_quantity)
-        self.sell(profitableSellingPrice, self.buy_quantity)
+        if lastPrice <= buyPrice:
+            spreadPerc = (lastAsk / lastBid - 1) * 100.0
+            logger.info(
+                'price:%.8f buyprice:%.8f sellprice:%.8f bid:%.8f ask:%.8f spread:%.2f Originalsellprice:%.8f' % (
+                    lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk,
+                    spreadPerc, profitableSellingPrice - (lastBid * self.commision)))
+            self.buy(buyPrice, self.buy_quantity)
+            self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
         self.client.order_limit_buy(symbol=self.option.symbol, quantity=quantity, price=buyPrice)
