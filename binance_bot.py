@@ -140,14 +140,14 @@ class Trade:
             self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
-        buyPrice = "{:0.0{}f}".format(buyPrice, self.baseAssetPrecision-2)
-        self.client.order_limit_buy(symbol=self.option.symbol, quantity=quantity, price=buyPrice)
+        buyPriceStr = "{:0.0{}f}".format(buyPrice, self.baseAssetPrecision-2)
+        self.client.order_limit_buy(symbol=self.option.symbol, quantity=quantity, price=buyPriceStr)
         self.buy_order_confirm()
         self.last_buy_price = buyPrice
 
     def sell(self, profitableSellingPrice, quantity):
-        profitableSellingPrice = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision-2)
-        self.client.order_limit_sell(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPrice)
+        profitableSellingPriceStr = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision-2)
+        self.client.order_limit_sell(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPriceStr)
         self.sell_order_confirm()
 
     def format_quantity(self, quantity):
