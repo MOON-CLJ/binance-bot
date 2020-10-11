@@ -66,7 +66,7 @@ class Trade:
         exchange_info = self.client.get_exchange_info()
         for symbol_info in exchange_info["symbols"]:
             if symbol_info["symbol"] == self.option.symbol:
-                self.filters = symbol_info["filters"]
+                self.filters = {filter["filterType"]: filter for filter in symbol_info["filters"]}
 
     def buy_order_confirm(self):
         cnt = 0
@@ -99,10 +99,10 @@ class Trade:
         logger.info("Sell order is confirmed!")
 
     def action(self):
-        lastPrice = float(self.client.get_ticker(self.option.symbol)["lastPrice"])
+        lastPrice = float(self.client.get_ticker(symbol=self.option.symbol)["lastPrice"])
         assert lastPrice > 0, "lastPrice must > 0"
 
-        order_book = self.client.get_order_book(self.option.symbol)
+        order_book = self.client.get_order_book(symbol=self.option.symbol)
         bids = order_book["bids"]
         asks = order_book["asks"]
         lastBid = float(bids[0][0])
