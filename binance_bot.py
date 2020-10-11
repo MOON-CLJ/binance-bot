@@ -4,13 +4,14 @@ import time
 import math
 import argparse
 
+sys.path.insert(0, '/binance-bot')
+
+import config
+
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
 
 logger = logging.getLogger(__name__)
-
-API_SECRET = 'ENTER-YOUR-SECRET-KEY-HERE'
-API_KEY = 'ENTER-YOUR-API-HERE'
 
 
 def setup_logger(symbol):
@@ -46,7 +47,7 @@ class Trade:
     def __init__(self, option):
         logger.info(option)
         self.option = option
-        self.client = Client(API_KEY, API_SECRET)
+        self.client = Client(config.API_KEY, config.API_SECRET)
         self.commision = 0.0005
 
         self.filters = None
@@ -139,11 +140,11 @@ class Trade:
 
     def validate(self):
         self.get_exchange_info()
-        order_book = self.client.get_order_book(self.option.symbol)
+        order_book = self.client.get_order_book(symbol=self.option.symbol)
         bids = order_book["bids"]
         lastBid = float(bids[0][0])
 
-        lastPrice = float(self.client.get_ticker(self.option.symbol)["lastPrice"])
+        lastPrice = float(self.client.get_ticker(symbol=self.option.symbol)["lastPrice"])
 
         minQty = float(self.filters['LOT_SIZE']['minQty'])
         minPrice = float(self.filters['PRICE_FILTER']['minPrice'])
