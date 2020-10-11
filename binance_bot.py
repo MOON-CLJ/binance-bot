@@ -65,11 +65,10 @@ class Trade:
     def calculate_price_target(self, lastBid):
         return lastBid + (lastBid * self.option.profit / 100) + (lastBid * self.commision)
 
-    def get_exchange_info(self):
-        exchange_info = self.client.get_exchange_info()
-        for symbol_info in exchange_info["symbols"]:
-            if symbol_info["symbol"] == self.option.symbol:
-                self.filters = {filter["filterType"]: filter for filter in symbol_info["filters"]}
+    def get_symbol_info(self):
+        symbol_info = self.client.get_symbol_info(symbol=self.option.symbol)
+        logger.info(symbol_info)
+        self.filters = {filter["filterType"]: filter for filter in symbol_info["filters"]}
 
     def buy_order_confirm(self):
         cnt = 0
@@ -146,7 +145,7 @@ class Trade:
         return self.min_price + float(self.tick_size * formatter(float(price - self.min_price) / self.tick_size))
 
     def validate(self):
-        self.get_exchange_info()
+        self.get_symbol_info()
         order_book = self.client.get_order_book(symbol=self.option.symbol)
         bids = order_book["bids"]
         lastBid = float(bids[0][0])
