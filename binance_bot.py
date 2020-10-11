@@ -124,9 +124,9 @@ class Trade:
                 lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk, spreadPerc)
 
         if lastPrice <= buyPrice:
-            logger.info("Buy buyPrice:%.8f")
+            logger.info("Buy buyPrice:%.8f", buyPrice)
             self.buy(buyPrice, self.buy_quantity)
-            logger.info("Sell profitableSellingPrice:%.8f")
+            logger.info("Sell profitableSellingPrice:%.8f", profitableSellingPrice)
             self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
