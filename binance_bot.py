@@ -78,7 +78,7 @@ class Trade:
             time.sleep(self.option.wait_time * min(cnt, 10))
             if not orders:
                 return
-            if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'BUY']):
+            if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'BUY' and not order["clientOrderId"].startswith("ios_")]):
                 logger.info('Buy order filled')
                 return
             logger.info(orders)
@@ -93,7 +93,7 @@ class Trade:
             time.sleep(self.option.wait_time * min(cnt, 10))
             if not orders:
                 return
-            if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'SELL']):
+            if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'SELL' and not order["clientOrderId"].startswith("ios_")]):
                 logger.info('Sell order filled')
                 return
             logger.info(orders)
