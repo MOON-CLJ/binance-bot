@@ -4,12 +4,13 @@ import time
 import math
 import argparse
 
-import config
-
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
 
 logger = logging.getLogger(__name__)
+
+API_SECRET = 'ENTER-YOUR-SECRET-KEY-HERE'
+API_KEY = 'ENTER-YOUR-API-HERE'
 
 
 def setup_logger(symbol):
@@ -45,7 +46,7 @@ class Trade:
     def __init__(self, option):
         logger.info(option)
         self.option = option
-        self.client = Client(config.API_KEY, config.API_SECRET)
+        self.client = Client(API_KEY, API_SECRET)
         self.commision = 0.0005
 
         self.filters = None
