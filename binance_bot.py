@@ -60,10 +60,15 @@ class Trade:
         self.tick_size = None
         self.step_size = None
         self.min_price = None
+
+        self.last_buy_price = None
         self.buy_quantity = None
 
     def calculate_price_target(self, lastBid):
         return lastBid + (lastBid * self.option.profit / 100) + (lastBid * self.commision)
+
+    def calculate_price_profitable_by_buy_price(self, buyPrice):
+        return buyPrice / (1 + self.option.profit / 100)
 
     def get_symbol_info(self):
         symbol_info = self.client.get_symbol_info(symbol=self.option.symbol)
@@ -117,6 +122,8 @@ class Trade:
         profitableSellingPrice = self.format_price(self.calculate_price_target(lastBid), formatter=math.ceil)
         if self.option.buyprice > 0 and buyPrice > self.option.buyprice:
             raise Exception(f"buyPrice {buyPrice} more than {self.option.buyprice}")
+        if self.last_buy_price is not None and buyPrice > self.calculate_price_profitable_by_buy_price(self.last_buy_price):
+            raise Exception(f"buyPrice {buyPrice} too close to {self.last_buy_price}")
 
         spreadPerc = (lastAsk / lastBid - 1) * 100.0
         logger.info(
@@ -132,6 +139,7 @@ class Trade:
     def buy(self, buyPrice, quantity):
         self.client.order_limit_buy(symbol=self.option.symbol, quantity=quantity, price=buyPrice)
         self.buy_order_confirm()
+        self.last_buy_price = buyPrice
 
     def sell(self, profitableSellingPrice, quantity):
         self.client.order_limit_sell(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPrice)
