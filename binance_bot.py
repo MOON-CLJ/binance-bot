@@ -120,14 +120,13 @@ class Trade:
 
         spreadPerc = (lastAsk / lastBid - 1) * 100.0
         logger.info(
-            'price:%.8f buyprice:%.8f sellprice:%.8f bid:%.8f ask:%.8f spread:%.2f Originalsellprice:%.8f' % (
-                lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk,
-                spreadPerc, profitableSellingPrice - (lastBid * self.commision)))
+            'lastPrice:%.8f buyPrice:%.8f profitableSellingPrice:%.8f bid:%.8f ask:%.8f spread:%.2f',
+                lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk, spreadPerc)
 
         if lastPrice <= buyPrice:
-            logger.info("Buy")
+            logger.info("Buy buyPrice:%.8f")
             self.buy(buyPrice, self.buy_quantity)
-            logger.info("Sell")
+            logger.info("Sell profitableSellingPrice:%.8f")
             self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
