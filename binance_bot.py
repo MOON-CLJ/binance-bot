@@ -75,6 +75,7 @@ class Trade:
         symbol_info = self.client.get_symbol_info(symbol=self.option.symbol)
         logger.info(symbol_info)
         self.baseAssetPrecision = symbol_info["baseAssetPrecision"]
+        assert self.baseAssetPrecision >= 4
         self.filters = {filter["filterType"]: filter for filter in symbol_info["filters"]}
 
     def buy_order_confirm(self):
@@ -139,13 +140,13 @@ class Trade:
             self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
-        buyPrice = "{:0.0{}f}".format(buyPrice, self.baseAssetPrecision)
+        buyPrice = "{:0.0{}f}".format(buyPrice, self.baseAssetPrecision-2)
         self.client.order_limit_buy(symbol=self.option.symbol, quantity=quantity, price=buyPrice)
         self.buy_order_confirm()
         self.last_buy_price = buyPrice
 
     def sell(self, profitableSellingPrice, quantity):
-        profitableSellingPrice = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision)
+        profitableSellingPrice = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision-2)
         self.client.order_limit_sell(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPrice)
         self.sell_order_confirm()
 
