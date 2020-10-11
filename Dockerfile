@@ -1,7 +1,5 @@
-FROM python:3-alpine
+FROM python:latest
 
-RUN apk upgrade \
-    && apk add gcc
 RUN pip install python-binance
 
 CMD [ "python", "/app/binance_bot.py" ]
