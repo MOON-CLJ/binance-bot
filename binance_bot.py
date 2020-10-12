@@ -68,8 +68,8 @@ class Trade:
     def calculate_price_target(self, lastBid):
         return lastBid + (lastBid * self.option.profit / 100) + (lastBid * self.commision)
 
-    def calculate_price_profitable_by_buy_price(self, buyPrice):
-        return buyPrice / (1 + self.option.profit / 100)
+    def calculate_price_profitable_by_target_price(self, target_price, profit):
+        return target_price / (1 + profit / 100)
 
     def get_symbol_info(self):
         symbol_info = self.client.get_symbol_info(symbol=self.option.symbol)
@@ -104,6 +104,12 @@ class Trade:
             if all([order['status'] == 'FILLED' for order in orders if order['side'] == 'SELL' and not order["clientOrderId"].startswith("ios_")]):
                 logger.info('Sell order filled')
                 return
+            if cnt % 10 == 0:
+                lastPrice = float(self.client.get_ticker(symbol=self.option.symbol)["lastPrice"])
+                assert lastPrice > 0, "lastPrice must > 0"
+                if lastPrice < self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit * 10):
+                    logger.info('Sell order not filled, but curr price %s too low', lastPrice)
+                    return
             logger.info(orders)
 
         logger.info("Sell order is confirmed!")
@@ -125,8 +131,8 @@ class Trade:
         profitableSellingPrice = self.format_price(self.calculate_price_target(lastBid), formatter=math.ceil)
         if self.option.buyprice > 0 and buyPrice > self.option.buyprice:
             raise Exception(f"buyPrice {buyPrice} more than {self.option.buyprice}")
-        if self.last_buy_price is not None and buyPrice > self.calculate_price_profitable_by_buy_price(self.last_buy_price):
-            raise Exception(f"buyPrice {buyPrice} too close to {self.last_buy_price}")
+        if self.last_buy_price is not None and buyPrice > self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit):
+            raise Exception(f"buyPrice {buyPrice} too close to last_buy_price {self.last_buy_price}")
 
         spreadPerc = (lastAsk / lastBid - 1) * 100.0
         logger.info(
