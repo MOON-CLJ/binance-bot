@@ -108,7 +108,7 @@ class Trade:
                 lastPrice = float(self.client.get_ticker(symbol=self.option.symbol)["lastPrice"])
                 assert lastPrice > 0, "lastPrice must > 0"
                 if lastPrice < self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit * 10):
-                    logger.info('Sell order not filled, but curr price %s too low', lastPrice)
+                    logger.info('Sell order not filled, but curr price %s drop too low, buy another package', lastPrice)
                     return
             logger.info(orders)
 
@@ -194,7 +194,7 @@ class Trade:
         elif self.option.amount > 0:
             quantity = self.option.amount / lastBid
         else:
-            quantity = minNotional / lastBid * 1.1
+            quantity = minNotional / lastBid * 1.1 * self.option.multiple
 
         quantity = self.format_quantity(quantity)
         notional = lastBid * float(quantity)
@@ -228,6 +228,7 @@ class Trade:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--quantity', type=float, help='Buy/Sell Quantity', default=0)
+    parser.add_argument('--multiple', type=float, help='Buy/Sell Quantity', default=1)
     parser.add_argument('--amount', type=float, help='Buy/Sell Amount (Ex: 0.002 BTC)', default=0)
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
     parser.add_argument('--profit', type=float, help='Target Profit', default=1.3)
