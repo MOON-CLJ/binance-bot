@@ -131,7 +131,7 @@ class Trade:
         profitableSellingPrice = self.format_price(self.calculate_price_target(lastBid), formatter=math.ceil)
         if self.option.buyprice > 0 and buyPrice > self.option.buyprice:
             raise Exception(f"buyPrice {buyPrice} more than {self.option.buyprice}")
-        if self.last_buy_price is not None and buyPrice > self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit):
+        if self.last_buy_price is not None and buyPrice > self.last_buy_price * (1 + self.option.profit/100) * 0.7:
             raise Exception(f"buyPrice {buyPrice} too close to last_buy_price {self.last_buy_price}")
 
         spreadPerc = (lastAsk / lastBid - 1) * 100.0
