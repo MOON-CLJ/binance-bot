@@ -140,9 +140,9 @@ class Trade:
                 lastPrice, buyPrice, profitableSellingPrice, lastBid, lastAsk, spreadPerc)
 
         if lastPrice <= buyPrice:
-            logger.info("Buy buyPrice:%.8f", buyPrice)
+            logger.info("Buy buyPrice:%f quantity:%f", buyPrice, self.buy_quantity)
             self.buy(buyPrice, self.buy_quantity)
-            logger.info("Sell profitableSellingPrice:%.8f", profitableSellingPrice)
+            logger.info("Sell profitableSellingPrice:%f", profitableSellingPrice)
             self.sell(profitableSellingPrice, self.buy_quantity)
 
     def buy(self, buyPrice, quantity):
@@ -157,7 +157,7 @@ class Trade:
         self.sell_order_confirm()
 
     def format_quantity(self, quantity):
-        return float(self.step_size * math.floor(float(quantity) / self.step_size))
+        return self.step_size * int(math.ceil(quantity / self.step_size))
 
     def format_price(self, price, formatter=math.floor):
         return self.min_price + float(self.tick_size * formatter(float(price - self.min_price) / self.tick_size))
@@ -197,7 +197,7 @@ class Trade:
             quantity = minNotional / lastBid * 1.1 * self.option.multiple
 
         quantity = self.format_quantity(quantity)
-        notional = lastBid * float(quantity)
+        notional = lastBid * quantity
 
         if quantity < minQty:
             logger.error('Invalid quantity, minQty: %.8f (u: %.8f)' % (minQty, quantity))
