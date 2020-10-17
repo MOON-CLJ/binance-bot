@@ -10,7 +10,7 @@ sys.path.insert(0, '/binance-bot')
 import config
 
 from binance.client import Client
-from binance.exceptions import BinanceAPIException
+from retrying import retry
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def setup_logger(symbol):
 
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
+    # logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
@@ -82,7 +82,7 @@ class Trade:
         cnt = 0
         while True:
             cnt += 1
-            orders = self.client.get_open_orders(symbol=self.option.symbol)
+            orders = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_open_orders)(symbol=self.option.symbol)
             time.sleep(self.option.wait_time * min(cnt, 10))
             if not orders:
                 return
@@ -97,7 +97,7 @@ class Trade:
         cnt = 0
         while True:
             cnt += 1
-            orders = self.client.get_open_orders(symbol=self.option.symbol)
+            orders = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_open_orders)(symbol=self.option.symbol)
             time.sleep(self.option.wait_time * min(cnt, 10))
             if not orders:
                 return
@@ -105,7 +105,8 @@ class Trade:
                 logger.info('Sell order filled')
                 return
             if cnt % 10 == 0:
-                lastPrice = float(self.client.get_ticker(symbol=self.option.symbol)["lastPrice"])
+                lastPrice = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_ticker)(symbol=self.option.symbol)["lastPrice"]
+                lastPrice = float(lastPrice)
                 assert lastPrice > 0, "lastPrice must > 0"
                 if lastPrice < self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit * 10):
                     logger.info('Sell order not filled, but curr price %s drop too low, buy another package', lastPrice)
@@ -153,7 +154,7 @@ class Trade:
 
     def sell(self, profitableSellingPrice, quantity):
         profitableSellingPriceStr = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision-2)
-        self.client.order_limit_sell(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPriceStr)
+        retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.order_limit_sell)(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPriceStr)
         self.sell_order_confirm()
 
     def format_quantity(self, quantity):
