@@ -51,7 +51,7 @@ class Trade:
 
         self.option = option
         self.client = Client(config.API_KEY, config.API_SECRET)
-        self.commision = 0.0005
+        self.commision = 0.0075 * 2
 
         self.filters = None
         self.baseAssetPrecision = None
