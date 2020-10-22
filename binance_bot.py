@@ -108,6 +108,7 @@ class Trade:
                 lastPrice = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_ticker)(symbol=self.option.symbol)["lastPrice"]
                 lastPrice = float(lastPrice)
                 assert lastPrice > 0, "lastPrice must > 0"
+                drop_to_buy_profit = self.option.drop_to_buy_profit if self.option.drop_to_buy_profit is not None else (self.option.profit * 10)
                 if lastPrice < self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit * 10):
                     logger.info('Sell order not filled, but curr price %s drop too low, buy another package', lastPrice)
                     return
@@ -158,7 +159,7 @@ class Trade:
         self.sell_order_confirm()
 
     def format_quantity(self, quantity):
-        assert 0 < self.step_size < 0.01
+        assert 0 < self.step_size < 0.1
         quantity = self.step_size * int(math.ceil(quantity / self.step_size))
         roundn = int(math.fabs(math.floor(math.log(self.step_size, 10))))
         quantity = round(quantity, roundn)
@@ -237,6 +238,7 @@ if __name__ == '__main__':
     parser.add_argument('--amount', type=float, help='Buy/Sell Amount (Ex: 0.002 BTC)', default=0)
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
     parser.add_argument('--profit', type=float, help='Target Profit', default=1.3)
+    parser.add_argument('--drop_to_buy_profit', type=float, help='Target Drop To buy Profit')
 
     parser.add_argument('--increasing', type=float, help='Buy Price +Increasing (0.00000001)', default=0.00000001)
     parser.add_argument('--decreasing', type=float, help='Sell Price -Decreasing (0.00000001)', default=0.00000001)
