@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import talib as ta
 import matplotlib.pyplot as plt
@@ -47,7 +47,7 @@ class Strategy:
 
             if self.strategy == 'CROSS':
                 open_time = [int(entry[0]) for entry in self.klines]
-                new_time = [datetime.fromtimestamp(time / 1000) for time in open_time]
+                new_time = [datetime.fromtimestamp(time / 1000, tzinfo=timezone(timedelta(seconds=8*3600))) for time in open_time]
                 self.time = new_time
                 crosses = []
                 macdabove = False
@@ -115,7 +115,7 @@ class Strategy:
     def plotIndicator(self):
         if self.indicator == 'MACD':
             open_time = [int(entry[0]) for entry in self.klines]
-            new_time = [datetime.fromtimestamp(time / 1000) for time in open_time]
+            new_time = [datetime.fromtimestamp(time / 1000, tzinfo=timezone(timedelta(seconds=8*3600))) for time in open_time]
             plt.style.use('dark_background')
             plt.plot(new_time, self.indicator_result[0], label='MACD')
             plt.plot(new_time, self.indicator_result[1], label='MACD Signal')
