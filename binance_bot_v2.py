@@ -76,8 +76,8 @@ class Trader:
     def buy(self, buy_price):
         try:
             logger.info("buy quantity:%s price:%s", self.buy_quantity, buy_price)
-            return
             order = self.client.order_market_buy(symbol=self.option.symbol, quantity=self.buy_quantity)
+            logger.info("order %r", order)
             return order
         except Exception:
             logger.exception("buy failed")
@@ -85,8 +85,8 @@ class Trader:
     def sell(self, sell_price):
         try:
             logger.info("sell quantity:%s price:%s", self.buy_quantity, sell_price)
-            return
             order = self.client.order_market_sell(symbol=self.option.symbol, quantity=self.buy_quantity)
+            logger.info("order %r", order)
             return order
         except Exception:
             logger.exception("sell failed")
