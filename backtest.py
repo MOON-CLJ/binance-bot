@@ -241,5 +241,5 @@ if __name__ == '__main__':
         macd_backtests.append(macd_backtest)
     macd_backtests = sorted(macd_backtests, key=lambda x: x.amount)
     for macd_backtest in macd_backtests[-3:]:
-        if macd_backtest.num_trades > 0:
+        if macd_backtest.amount > 11000:
             macd_backtest.printResults()
