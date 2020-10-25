@@ -169,8 +169,6 @@ class Backtest:
         self.trades = []
         # Runs the backtest
         self.results = self.runBacktest()
-        # Prints the results
-        self.printResults()
 
     def runBacktest(self):
         amount = self.start
@@ -226,14 +224,21 @@ class Backtest:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
-    parser.add_argument('--interval', type=str, help='interval', required=True)
+    parser.add_argument('--interval', type=str, help='interval', default="1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M")
     option = parser.parse_args()
 
     trader = Trader()
     symbol = option.symbol
     interval = option.interval
-    klines = trader.client.get_klines(symbol=symbol, interval=interval)
-    macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
-    # macd_strategy.plotIndicator()
-    time = macd_strategy.getTime()
-    macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
+    intervals = interval.split(",")
+    macd_backtests = []
+    for interval in intervals:
+        klines = trader.client.get_klines(symbol=symbol, interval=interval)
+        macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
+        # macd_strategy.plotIndicator()
+        time = macd_strategy.getTime()
+        macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
+        macd_backtests.append(macd_backtests)
+    sorted(macd_backtests, key=lambda x: x.amount, reverse=True)
+    for macd_backtest in macd_backtests[:3]:
+        macd_backtest.printResults()
