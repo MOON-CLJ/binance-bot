@@ -49,6 +49,8 @@ class Trader:
         self.baseAssetPrecision = None
 
         self.buy_quantity = None
+        self.active_buy = False
+        self.last_action_datetime = None
 
     def get_symbol_info(self):
         symbol_info = self.client.get_symbol_info(symbol=self.option.symbol)
@@ -61,14 +63,17 @@ class Trader:
         klines = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_klines)(symbol=self.option.symbol, interval=self.option.interval)
         macd_strategy = Strategy('MACD', 'CROSS', self.option.symbol, self.option.interval, klines)
         time = macd_strategy.getTime()
+        if self.last_action_datetime is None:
+            self.last_action_datetime = time[-1]
         strategy_result = macd_strategy.getStrategyResult()
-        active_buy = False
-        if time[-1] == strategy_result[-1][0]:
-            if strategy_result[-1][3] == "BUY" and active_buy is False:
-                active_buy = True
+        if time[-1] != self.last_action_datetime:
+            if strategy_result[-1][3] == "BUY" and self.active_buy is False:
+                self.active_buy = True
+                self.last_action_datetime = time[-1]
                 self.buy()
-            if strategy_result[-1][3] == "SELL" and active_buy is True:
-                active_buy = False
+            if strategy_result[-1][3] == "SELL" and self.active_buy is True:
+                self.active_buy = False
+                self.last_action_datetime = time[-1]
                 self.sell()
 
     def buy(self):

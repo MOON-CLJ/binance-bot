@@ -51,7 +51,7 @@ class Backtest:
             if time[i] >= self.startTime and time[i] <= self.endTime:
                 if (time[i] == strategy_result[point_finder][0]):
                     if strategy_result[point_finder][3] == 'BUY':
-                        assert not active_buy
+                        assert active_buy is False
                         active_buy = True
                         buy_price = float(strategy_result[point_finder][4])
                         self.trades.append([strategy_result[point_finder][0], 'BUY', buy_price])
@@ -62,7 +62,7 @@ class Backtest:
                         if (float(strategy_result[point_finder][4]) > buy_price):
                             self.profitable_trades += 1
                         amount = bought_amount * float(strategy_result[point_finder][4])
-                        self.trades.append([strategy_result[point_finder][0],'SELL', float(strategy_result[point_finder][4])])
+                        self.trades.append([strategy_result[point_finder][0], 'SELL', float(strategy_result[point_finder][4])])
                     point_finder += 1
         self.amount = amount
 
