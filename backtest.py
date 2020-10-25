@@ -1,3 +1,5 @@
+import argparse
+
 from binance.client import Client
 import talib as ta
 import matplotlib.pyplot as plt
@@ -222,11 +224,16 @@ class Backtest:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
+    parser.add_argument('--interval', type=str, help='interval', required=True)
+    option = parser.parse_args()
+
     trader = Trader()
-    trading_pair = 'BTCUSDT'
-    interval = '1d'
-    klines = trader.client.get_klines(symbol=trading_pair, interval=interval)
-    macd_strategy = Strategy('MACD', 'CROSS', trading_pair, interval, klines)
+    symbol = option.symbol
+    interval = option.interval
+    klines = trader.client.get_klines(symbol=symbol, interval=interval)
+    macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
     # macd_strategy.plotIndicator()
     time = macd_strategy.getTime()
     macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
