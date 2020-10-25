@@ -99,6 +99,21 @@ class Strategy:
     def getKlines(self):
         return self.klines
 
+    '''
+    Getter for the trading pair
+    '''
+    def getPair(self):
+        return self.pair
+
+    '''
+    Getter for the trading interval
+    '''
+    def getInterval(self):
+        return self.interval
+
+    '''
+    Getter for the time list
+    '''
     def getTime(self):
         return self.time
 
