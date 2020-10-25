@@ -5,8 +5,6 @@ import time
 import math
 import argparse
 
-sys.path.insert(0, '/binance-bot')
-
 import config
 
 from binance.client import Client
