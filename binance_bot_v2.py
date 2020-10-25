@@ -115,8 +115,6 @@ class Trader:
 
         if self.option.quantity > 0:
             quantity = self.option.quantity
-        elif self.option.amount > 0:
-            quantity = self.option.amount / lastBid
         else:
             quantity = minNotional / lastBid * 1.1 * self.option.multiple
 
