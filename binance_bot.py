@@ -159,7 +159,7 @@ class Trade:
         self.sell_order_confirm()
 
     def format_quantity(self, quantity):
-        assert 0 < self.step_size < 0.1
+        assert 0 < self.step_size <= 0.1
         quantity = self.step_size * int(math.ceil(quantity / self.step_size))
         roundn = int(math.fabs(math.floor(math.log(self.step_size, 10))))
         quantity = round(quantity, roundn)
