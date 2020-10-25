@@ -35,13 +35,6 @@ def setup_logger(symbol):
     logger.addHandler(stream_handler)
 
 
-"""
-klines = client.get_historical_klines(sym, Client.KLINE_INTERVAL_1MINUTE, "1 min ago")
-most_recent = klines.pop()
-last_closing = most_recent[4]
-"""
-
-
 class Trader:
     def __init__(self, option):
         setup_logger(option.symbol)

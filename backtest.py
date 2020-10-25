@@ -9,10 +9,6 @@ from datetime import datetime
 import config
 
 
-class Trader:
-    def __init__(self):
-        self.client = Client(config.API_KEY, config.API_SECRET)
-
 
 class Strategy:
 
@@ -225,13 +221,13 @@ if __name__ == '__main__':
     parser.add_argument('--interval', type=str, help='interval', default="1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M")
     option = parser.parse_args()
 
-    trader = Trader()
+    client = Client(config.API_KEY, config.API_SECRET)
     symbol = option.symbol
     interval = option.interval
     intervals = interval.split(",")
     macd_backtests = []
     for interval in intervals:
-        klines = trader.client.get_klines(symbol=symbol, interval=interval)
+        klines = client.get_klines(symbol=symbol, interval=interval)
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
