@@ -194,7 +194,7 @@ class Backtest:
                     if strategy_result[point_finder][3] == 'BUY':
                         active_buy = True
                         buy_price = float(strategy_result[point_finder][4])
-                        self.trades.append(['BUY', buy_price])
+                        self.trades.append([strategy_result[point_finder][0], 'BUY', buy_price])
                     if strategy_result[point_finder][3] == 'SELL' and active_buy == True:
                         active_buy = False
                         bought_amount = amount / buy_price
@@ -202,7 +202,7 @@ class Backtest:
                         if (float(strategy_result[point_finder][4]) > buy_price):
                             self.profitable_trades += 1
                         amount = bought_amount * float(strategy_result[point_finder][4])
-                        self.trades.append(['SELL', float(strategy_result[point_finder][4])])
+                        self.trades.append([strategy_result[point_finder][0],'SELL', float(strategy_result[point_finder][4])])
                     point_finder += 1
         self.amount = amount
 
@@ -220,7 +220,7 @@ class Backtest:
         percent = self.amount / self.start * 100
         print(str(percent) + "% of starting amount")
         for entry in self.trades:
-            print(entry[0] + " at " + str(entry[1]))
+            print(entry[1] + " at " + str(entry[2]) + " when " + str(entry[0]))
 
 
 if __name__ == '__main__':
