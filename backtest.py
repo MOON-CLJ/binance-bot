@@ -239,6 +239,6 @@ if __name__ == '__main__':
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
         macd_backtests.append(macd_backtest)
-    sorted(macd_backtests, key=lambda x: x.amount, reverse=True)
+    macd_backtests = sorted(macd_backtests, key=lambda x: x.amount, reverse=True)
     for macd_backtest in macd_backtests[:3]:
         macd_backtest.printResults()
