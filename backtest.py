@@ -137,6 +137,7 @@ class Strategy:
             plt.ylabel("Value")
             plt.legend()
             plt.savefig("images/" + title.replace(" ", "_") + ".png")
+            plt.clf()
 
         else:
             pass
