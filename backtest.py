@@ -99,24 +99,6 @@ class Strategy:
     def getKlines(self):
         return self.klines
 
-    '''
-    Getter for the trading pair
-    '''
-
-    def getPair(self):
-        return self.pair
-
-    '''
-    Getter for the trading interval
-    '''
-
-    def getInterval(self):
-        return self.interval
-
-    '''
-    Getter for the time list
-    '''
-
     def getTime(self):
         return self.time
 
@@ -139,7 +121,7 @@ class Strategy:
             plt.xlabel("Open Time")
             plt.ylabel("Value")
             plt.legend()
-            plt.show()
+            plt.savefig(title.replace(" ", "_") + ".png")
 
         else:
             pass
@@ -235,10 +217,11 @@ if __name__ == '__main__':
     for interval in intervals:
         klines = trader.client.get_klines(symbol=symbol, interval=interval)
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
-        # macd_strategy.plotIndicator()
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
         macd_backtests.append(macd_backtest)
+        if macd_backtest.amount - 75 * macd_backtest.num_trades > 11000:
+            macd_strategy.plotIndicator()
     macd_backtests = sorted(macd_backtests, key=lambda x: x.amount - 75 * x.num_trades)
     for macd_backtest in macd_backtests[-3:]:
         if macd_backtest.amount - 75 * macd_backtest.num_trades > 11000:
