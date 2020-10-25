@@ -9,7 +9,6 @@ from datetime import datetime
 import config
 
 
-
 class Strategy:
 
     def __init__(self, indicator_name, strategy_name, pair, interval, klines):

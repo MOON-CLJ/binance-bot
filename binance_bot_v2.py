@@ -100,7 +100,7 @@ class Trader:
                 lastPrice = float(lastPrice)
                 assert lastPrice > 0, "lastPrice must > 0"
                 drop_to_buy_profit = self.option.drop_to_buy_profit if self.option.drop_to_buy_profit is not None else (self.option.profit * 10)
-                if lastPrice < self.calculate_price_profitable_by_target_price(self.last_buy_price, drop_to_buy_profit):
+                if lastPrice < self.calculate_price_profitable_by_target_price(self.last_buy_price, self.option.profit * 10):
                     logger.info('Sell order not filled, but curr price %s drop too low, buy another package', lastPrice)
                     return
             logger.info(orders)
