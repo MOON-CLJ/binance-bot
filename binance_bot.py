@@ -19,7 +19,7 @@ def setup_logger(symbol):
 
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    # logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
+    logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
@@ -42,7 +42,7 @@ last_closing = most_recent[4]
 """
 
 
-class Trade:
+class Trader:
     def __init__(self, option):
         setup_logger(option.symbol)
         logger.info(option)
@@ -247,5 +247,5 @@ if __name__ == '__main__':
     parser.add_argument('--sellprice', type=float, help='Sell Price (Price is greater than equal >=)', default=0)
 
     # Get start
-    t = Trade(parser.parse_args())
+    t = Trader(parser.parse_args())
     t.run()
