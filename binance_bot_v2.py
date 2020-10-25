@@ -68,31 +68,25 @@ class Trader:
         strategy_result = macd_strategy.getStrategyResult()
         if time[-1] != self.last_action_datetime:
             if strategy_result[-1][3] == "BUY" and self.active_buy is False:
+                self.buy()
                 self.active_buy = True
                 self.last_action_datetime = time[-1]
-                self.buy()
             if strategy_result[-1][3] == "SELL" and self.active_buy is True:
+                self.sell()
                 self.active_buy = False
                 self.last_action_datetime = time[-1]
-                self.sell()
 
     def buy(self):
-        try:
-            logger.info("buy quantity:%s", self.buy_quantity)
-            order = self.client.order_market_buy(symbol=self.option.symbol, quantity=self.buy_quantity)
-            logger.info("order %r", order)
-            return order
-        except Exception:
-            logger.exception("buy failed")
+        logger.info("buy quantity:%s", self.buy_quantity)
+        order = self.client.order_market_buy(symbol=self.option.symbol, quantity=self.buy_quantity)
+        logger.info("order %r", order)
+        return order
 
     def sell(self):
-        try:
-            logger.info("sell quantity:%s", self.buy_quantity)
-            order = self.client.order_market_sell(symbol=self.option.symbol, quantity=self.buy_quantity)
-            logger.info("order %r", order)
-            return order
-        except Exception:
-            logger.exception("sell failed")
+        logger.info("sell quantity:%s", self.buy_quantity)
+        order = self.client.order_market_sell(symbol=self.option.symbol, quantity=self.buy_quantity)
+        logger.info("order %r", order)
+        return order
 
     def format_quantity(self, quantity):
         assert 0 < self.step_size <= 0.1
