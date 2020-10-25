@@ -74,6 +74,7 @@ class Trader:
     def buy(self):
         try:
             logger.info("buy %s", self.buy_quantity)
+            return
             order = self.client.order_market_buy(symbol=self.option.symbol, quantity=self.buy_quantity)
             return order
         except Exception:
@@ -82,6 +83,7 @@ class Trader:
     def sell(self):
         try:
             logger.info("sell %s", self.buy_quantity)
+            return
             order = self.client.order_market_sell(symbol=self.option.symbol, quantity=self.buy_quantity)
             return order
         except Exception:
@@ -146,7 +148,7 @@ if __name__ == '__main__':
     parser.add_argument('--quantity', type=float, help='Buy/Sell Quantity', default=0)
     parser.add_argument('--multiple', type=float, help='Buy/Sell Quantity', default=1)
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
-    parser.add_argument('--interval', type=str, help='interval', default="1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M")
+    parser.add_argument('--interval', type=str, help='interval', required=True)
 
     # Get start
     t = Trader(parser.parse_args())
