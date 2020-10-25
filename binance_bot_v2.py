@@ -68,13 +68,15 @@ class Trader:
         strategy_result = macd_strategy.getStrategyResult()
         if time[-1] != self.last_action_datetime:
             if strategy_result[-1][3] == "BUY" and self.active_buy is False:
-                self.buy()
+                #self.buy()
                 self.active_buy = True
                 self.last_action_datetime = time[-1]
+                logger.info("buy last_action_datetime:%s", self.last_action_datetime.isoformat())
             if strategy_result[-1][3] == "SELL" and self.active_buy is True:
-                self.sell()
+                #self.sell()
                 self.active_buy = False
                 self.last_action_datetime = time[-1]
+                logger.info("sell last_action_datetime:%s", self.last_action_datetime.isoformat())
 
     def buy(self):
         logger.info("buy quantity:%s", self.buy_quantity)
