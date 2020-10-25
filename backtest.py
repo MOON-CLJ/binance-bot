@@ -121,7 +121,7 @@ class Strategy:
             plt.xlabel("Open Time")
             plt.ylabel("Value")
             plt.legend()
-            plt.savefig(title.replace(" ", "_") + ".png")
+            plt.savefig("images/" + title.replace(" ", "_") + ".png")
 
         else:
             pass
