@@ -151,6 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('--multiple', type=float, help='Buy/Sell Quantity', default=1)
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
     parser.add_argument('--interval', type=str, help='interval', required=True)
+    parser.add_argument('--wait_time', type=float, help='Wait Time (seconds)', default=10)
 
     # Get start
     t = Trader(parser.parse_args())
