@@ -80,7 +80,7 @@ class Backtest:
         percent = self.amount / self.start * 100
         print(str(percent) + "% of starting amount")
         for entry in self.trades:
-            print(entry[1] + " at " + str(entry[2]) + " when " + str(entry[0]))
+            print(entry[1] + " at " + str(entry[2]) + " when " + entry[0].isoformat())
 
 
 if __name__ == '__main__':
