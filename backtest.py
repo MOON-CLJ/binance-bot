@@ -176,6 +176,8 @@ class Backtest:
         time = self.strategy.getTime()
         point_finder = 0
         strategy_result = self.strategy.getStrategyResult()
+        if len(strategy_result):
+            return
         # Finds the first cross point within the desired backtest interval
         while strategy_result[point_finder][0] < self.startTime:
             point_finder += 1
