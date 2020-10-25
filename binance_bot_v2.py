@@ -64,10 +64,12 @@ class Trader:
         strategy_result = macd_strategy.getStrategyResult()
         active_buy = False
         if time[-1] == strategy_result[-1][0]:
-            if strategy_result[-1][3] == "BUY" and active_buy is False:
+            if strategy_result[-1][3] == "BUY":
+                assert active_buy is False
                 active_buy = True
                 self.buy()
-            if strategy_result[-1][3] == "SELL" and active_buy is True:
+            if strategy_result[-1][3] == "SELL":
+                assert active_buy is True
                 active_buy = False
                 self.sell()
 
