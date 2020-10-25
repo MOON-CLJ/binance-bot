@@ -2,6 +2,6 @@ FROM python:latest
 
 WORKDIR /binance-bot
 
-RUN pip install -r requirement.txt
+RUN pip install python-binance retrying
 
 CMD [ "bash" ]
