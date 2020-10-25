@@ -66,25 +66,23 @@ class Trader:
         if time[-1] == strategy_result[-1][0]:
             if strategy_result[-1][3] == "BUY" and active_buy is False:
                 active_buy = True
-                buy_price = strategy_result[-1][4]
-                self.buy(buy_price)
+                self.buy()
             if strategy_result[-1][3] == "SELL" and active_buy is True:
                 active_buy = False
-                sell_price = strategy_result[-1][4]
-                self.sell(sell_price)
+                self.sell()
 
-    def buy(self, buy_price):
+    def buy(self):
         try:
-            logger.info("buy quantity:%s price:%s", self.buy_quantity, buy_price)
+            logger.info("buy quantity:%s", self.buy_quantity)
             order = self.client.order_market_buy(symbol=self.option.symbol, quantity=self.buy_quantity)
             logger.info("order %r", order)
             return order
         except Exception:
             logger.exception("buy failed")
 
-    def sell(self, sell_price):
+    def sell(self):
         try:
-            logger.info("sell quantity:%s price:%s", self.buy_quantity, sell_price)
+            logger.info("sell quantity:%s", self.buy_quantity)
             order = self.client.order_market_sell(symbol=self.option.symbol, quantity=self.buy_quantity)
             logger.info("order %r", order)
             return order
