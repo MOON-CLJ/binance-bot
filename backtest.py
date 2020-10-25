@@ -221,11 +221,12 @@ class Backtest:
             print(entry[0] + " at " + str(entry[1]))
 
 
-trader = Trader()
-trading_pair = 'BTCUSDT'
-interval = '1d'
-klines = trader.client.get_klines(symbol=trading_pair, interval=interval)
-macd_strategy = Strategy('MACD', 'CROSS', trading_pair, interval, klines)
-# macd_strategy.plotIndicator()
-time = macd_strategy.getTime()
-macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
+if __name__ == '__main__':
+    trader = Trader()
+    trading_pair = 'BTCUSDT'
+    interval = '1d'
+    klines = trader.client.get_klines(symbol=trading_pair, interval=interval)
+    macd_strategy = Strategy('MACD', 'CROSS', trading_pair, interval, klines)
+    # macd_strategy.plotIndicator()
+    time = macd_strategy.getTime()
+    macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
