@@ -93,18 +93,24 @@ if __name__ == '__main__':
     symbol = option.symbol
     interval = option.interval
     intervals = interval.split(",")
-    macd_backtests = []
-    for interval in intervals:
+    if len(intervals) == 1:
         klines = client.get_klines(symbol=symbol, interval=interval)
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
-        macd_backtests.append(macd_backtest)
-        """
-        if macd_backtest.amount - 75 * macd_backtest.num_trades > 11000:
-            macd_strategy.plotIndicator()
-        """
-    macd_backtests = sorted(macd_backtests, key=lambda x: x.amount - 75 * x.num_trades)
-    for macd_backtest in macd_backtests[-3:]:
-        if macd_backtest.amount - 75 * macd_backtest.num_trades > 11000:
+        macd_backtest.printResults()
+    else:
+        macd_backtests = []
+        for interval in intervals:
+            klines = client.get_klines(symbol=symbol, interval=interval)
+            macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
+            time = macd_strategy.getTime()
+            macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
+            macd_backtests.append(macd_backtest)
+            """
+            if macd_backtest.amount - 75 * macd_backtest.num_trades > 11000:
+                macd_strategy.plotIndicator()
+            """
+        macd_backtests = sorted(macd_backtests, key=lambda x: x.amount - 75 * x.num_trades)
+        for macd_backtest in macd_backtests[-3:]:
             macd_backtest.printResults()

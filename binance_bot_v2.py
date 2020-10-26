@@ -48,8 +48,9 @@ class Trader:
         self.filters = None
         self.baseAssetPrecision = None
 
-        self.buy_quantity = None
+        self.min_quantity = None
         self.active_buy = False
+        self.last_buy_quantity = None
         self.last_action_datetime = None
 
     def get_symbol_info(self):
@@ -68,27 +69,27 @@ class Trader:
             logger.info("init last_action_datetime:%s", self.last_action_datetime.isoformat())
         if strategy_result[-1][0] > self.last_action_datetime:
             if strategy_result[-1][3] == "BUY" and self.active_buy is False:
-                self.buy()
+                self.last_buy_quantity = self.buy()
                 self.active_buy = True
                 self.last_action_datetime = strategy_result[-1][0]
                 logger.info("buy last_action_datetime:%s", self.last_action_datetime.isoformat())
             if strategy_result[-1][3] == "SELL" and self.active_buy is True:
-                self.sell()
+                self.sell(self.last_buy_quantity)
                 self.active_buy = False
                 self.last_action_datetime = strategy_result[-1][0]
                 logger.info("sell last_action_datetime:%s", self.last_action_datetime.isoformat())
 
     def buy(self):
-        logger.info("buy quantity:%s", self.buy_quantity)
-        order = self.client.order_market_buy(symbol=self.option.symbol, quantity=self.buy_quantity)
+        quantity = self.min_quantity * self.option.above_multiple
+        logger.info("buy quantity:%s", quantity)
+        order = self.client.order_market_buy(symbol=self.option.symbol, quantity=quantity)
         logger.info("order %r", order)
-        return order
+        return quantity
 
-    def sell(self):
-        logger.info("sell quantity:%s", self.buy_quantity)
-        order = self.client.order_market_sell(symbol=self.option.symbol, quantity=self.buy_quantity)
+    def sell(self, quantity):
+        logger.info("sell quantity:%s", quantity)
+        order = self.client.order_market_sell(symbol=self.option.symbol, quantity=quantity)
         logger.info("order %r", order)
-        return order
 
     def format_quantity(self, quantity):
         assert 0 < self.step_size <= 0.1
@@ -112,10 +113,7 @@ class Trader:
         # set
         self.step_size = stepSize
 
-        if self.option.quantity > 0:
-            quantity = self.option.quantity
-        else:
-            quantity = minNotional / lastBid * 1.1 * self.option.multiple
+        quantity = minNotional / lastBid
 
         quantity = self.format_quantity(quantity)
         notional = lastBid * quantity
@@ -129,7 +127,7 @@ class Trader:
             sys.exit(1)
 
         # set
-        self.buy_quantity = quantity
+        self.min_quantity = quantity
 
     def run(self):
         self.validate()
@@ -145,7 +143,8 @@ class Trader:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--quantity', type=float, help='Buy/Sell Quantity', default=0)
-    parser.add_argument('--multiple', type=float, help='Buy/Sell Quantity', default=2)
+    parser.add_argument('--above_multiple', type=float, help='Buy/Sell multiple', default=2)
+    parser.add_argument('--below_multiple', type=float, help='Buy/Sell multiple', default=4)
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
     parser.add_argument('--interval', type=str, help='interval', required=True)
     parser.add_argument('--wait_time', type=float, help='Wait Time (seconds)', default=10)
