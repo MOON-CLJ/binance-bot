@@ -55,14 +55,16 @@ class Backtest:
                         active_buy = True
                         buy_price = float(strategy_result[point_finder][4])
                         self.trades.append([strategy_result[point_finder][0], 'BUY', buy_price])
-                    if strategy_result[point_finder][3] == 'SELL' and active_buy == True:
+                    if strategy_result[point_finder][3] == 'SELL' and active_buy is True:
                         active_buy = False
                         bought_amount = amount / buy_price
                         self.num_trades += 1
-                        if (float(strategy_result[point_finder][4]) > buy_price):
+                        sell_price = float(strategy_result[point_finder][4])
+                        if (sell_price > buy_price):
                             self.profitable_trades += 1
-                        amount = bought_amount * float(strategy_result[point_finder][4])
-                        self.trades.append([strategy_result[point_finder][0], 'SELL', float(strategy_result[point_finder][4])])
+
+                        amount = bought_amount * sell_price
+                        self.trades.append([strategy_result[point_finder][0], 'SELL', sell_price])
                     point_finder += 1
         self.amount = amount
 
