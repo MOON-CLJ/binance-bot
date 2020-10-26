@@ -49,9 +49,14 @@ class Trader:
         self.baseAssetPrecision = None
 
         self.min_quantity = None
-        self.active_buy = False
-        self.last_buy_quantity = None
-        self.last_action_datetime = None
+
+        self.runtime = {}
+        for interval in self.option.interval.split(","):
+            self.runtime[interval] = {
+                "active_buy": False,
+                "last_buy_quantity": None,
+                "last_action_datetime": None,
+            }
 
     def get_symbol_info(self):
         symbol_info = self.client.get_symbol_info(symbol=self.option.symbol)
@@ -61,23 +66,24 @@ class Trader:
         self.filters = {filter["filterType"]: filter for filter in symbol_info["filters"]}
 
     def action(self):
-        klines = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_klines)(symbol=self.option.symbol, interval=self.option.interval)
-        macd_strategy = Strategy('MACD', 'CROSS', self.option.symbol, self.option.interval, klines)
-        strategy_result = macd_strategy.getStrategyResult()
-        if self.last_action_datetime is None:
-            self.last_action_datetime = strategy_result[-1][0]
-            logger.info("init last_action_datetime:%s", self.last_action_datetime.isoformat())
-        if strategy_result[-1][0] > self.last_action_datetime:
-            if strategy_result[-1][3] == "BUY" and self.active_buy is False:
-                self.last_buy_quantity = self.buy()
-                self.active_buy = True
-                self.last_action_datetime = strategy_result[-1][0]
-                logger.info("buy last_action_datetime:%s", self.last_action_datetime.isoformat())
-            if strategy_result[-1][3] == "SELL" and self.active_buy is True:
-                self.sell(self.last_buy_quantity)
-                self.active_buy = False
-                self.last_action_datetime = strategy_result[-1][0]
-                logger.info("sell last_action_datetime:%s", self.last_action_datetime.isoformat())
+        for interval in self.option.interval.split(","):
+            klines = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_klines)(symbol=self.option.symbol, interval=interval)
+            macd_strategy = Strategy('MACD', 'CROSS', self.option.symbol, interval, klines)
+            strategy_result = macd_strategy.getStrategyResult()
+            if self.runtime[interval]["last_action_datetime"] is None:
+                self.runtime[interval]["last_action_datetime"] = strategy_result[-1][0]
+                logger.info("init interval:%s last_action_datetime:%s", interval, self.runtime[interval]["last_action_datetime"].isoformat())
+            if strategy_result[-1][0] > self.runtime[interval]["last_action_datetime"]:
+                if strategy_result[-1][3] == "BUY" and self.runtime[interval]["active_buy"] is False:
+                    self.runtime[interval]["last_buy_quantity"] = self.buy()
+                    self.runtime[interval]["active_buy"] = True
+                    self.runtime[interval]["last_action_datetime"] = strategy_result[-1][0]
+                    logger.info("buy interval:%s last_action_datetime:%s", interval, self.runtime[interval]["last_action_datetime"].isoformat())
+                if strategy_result[-1][3] == "SELL" and self.runtime[interval]["active_buy"] is True:
+                    self.sell(self.runtime[interval]["last_buy_quantity"])
+                    self.runtime[interval]["active_buy"] = False
+                    self.runtime[interval]["last_action_datetime"] = strategy_result[-1][0]
+                    logger.info("sell interval:%s last_action_datetime:%s", interval, self.runtime[interval]["last_action_datetime"].isoformat())
 
     def buy(self):
         quantity = self.min_quantity * self.option.above_multiple
@@ -143,8 +149,8 @@ class Trader:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--quantity', type=float, help='Buy/Sell Quantity', default=0)
-    parser.add_argument('--above_multiple', type=float, help='Buy/Sell multiple', default=2)
-    parser.add_argument('--below_multiple', type=float, help='Buy/Sell multiple', default=4)
+    parser.add_argument('--above_multiple', type=float, help='Buy/Sell multiple', default=1.2)
+    parser.add_argument('--below_multiple', type=float, help='Buy/Sell multiple', default=3)
     parser.add_argument('--symbol', type=str, help='Market Symbol (Ex: XVGBTC - XVGETH)', required=True)
     parser.add_argument('--interval', type=str, help='interval', required=True)
     parser.add_argument('--wait_time', type=float, help='Wait Time (seconds)', default=10)
