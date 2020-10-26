@@ -66,7 +66,7 @@ class Trader:
         if self.last_action_datetime is None:
             self.last_action_datetime = strategy_result[-1][0]
             logger.info("init last_action_datetime:%s", self.last_action_datetime.isoformat())
-        if strategy_result[-1][0] != self.last_action_datetime:
+        if strategy_result[-1][0] > self.last_action_datetime:
             if strategy_result[-1][3] == "BUY" and self.active_buy is False:
                 self.buy()
                 self.active_buy = True
