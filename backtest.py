@@ -98,7 +98,8 @@ if __name__ == '__main__':
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
-        macd_backtest.printResults()
+        if macd_backtest.num_trades > 0:
+            macd_backtest.printResults()
     else:
         macd_backtests = []
         for interval in intervals:
@@ -113,4 +114,5 @@ if __name__ == '__main__':
             """
         macd_backtests = sorted(macd_backtests, key=lambda x: x.amount - 75 * x.num_trades)
         for macd_backtest in macd_backtests[-3:]:
-            macd_backtest.printResults()
+            if macd_backtest.num_trades > 0:
+                macd_backtest.printResults()
