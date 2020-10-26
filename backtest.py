@@ -116,7 +116,7 @@ if __name__ == '__main__':
             if macd_backtest.amount > 11000:
                 macd_strategy.plotIndicator()
             """
-        macd_backtests = sorted(macd_backtests, key=lambda x: x.amount)
+        macd_backtests = sorted(macd_backtests, key=lambda x: x.amount, reverse=True)
         cnt = 0
         for macd_backtest in macd_backtests:
             if cnt == 3:
