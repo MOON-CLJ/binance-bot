@@ -50,9 +50,9 @@ class Trader:
 
         self.min_quantity = None
 
-        self.runtime = {}
+        self.history = {}
         for interval in self.option.interval.split(","):
-            self.runtime[interval] = {
+            self.history[interval] = {
                 "active_buy": False,
                 "last_buy_quantity": None,
                 "last_action_datetime": None,
@@ -67,23 +67,24 @@ class Trader:
 
     def action(self):
         for interval in self.option.interval.split(","):
-            klines = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_klines)(symbol=self.option.symbol, interval=interval)
+            interval_last_data = self.history[interval]
+            klines = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_klines)(symbol=self.option.symbol, interval=interval, limit=1000)
             macd_strategy = Strategy('MACD', 'CROSS', self.option.symbol, interval, klines)
             strategy_result = macd_strategy.getStrategyResult()
-            if self.runtime[interval]["last_action_datetime"] is None:
-                self.runtime[interval]["last_action_datetime"] = strategy_result[-1][0]
-                logger.info("init interval:%s last_action_datetime:%s", interval, self.runtime[interval]["last_action_datetime"].isoformat())
-            if strategy_result[-1][0] > self.runtime[interval]["last_action_datetime"]:
-                if strategy_result[-1][3] == "BUY" and self.runtime[interval]["active_buy"] is False:
-                    self.runtime[interval]["last_buy_quantity"] = self.buy()
-                    self.runtime[interval]["active_buy"] = True
-                    self.runtime[interval]["last_action_datetime"] = strategy_result[-1][0]
-                    logger.info("buy interval:%s last_action_datetime:%s", interval, self.runtime[interval]["last_action_datetime"].isoformat())
-                if strategy_result[-1][3] == "SELL" and self.runtime[interval]["active_buy"] is True:
-                    self.sell(self.runtime[interval]["last_buy_quantity"])
-                    self.runtime[interval]["active_buy"] = False
-                    self.runtime[interval]["last_action_datetime"] = strategy_result[-1][0]
-                    logger.info("sell interval:%s last_action_datetime:%s", interval, self.runtime[interval]["last_action_datetime"].isoformat())
+            if interval_last_data["last_action_datetime"] is None:
+                interval_last_data["last_action_datetime"] = strategy_result[-1][0]
+                logger.info("init interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
+            if strategy_result[-1][0] > interval_last_data["last_action_datetime"]:
+                if strategy_result[-1][3] == "BUY" and interval_last_data["active_buy"] is False:
+                    interval_last_data["last_buy_quantity"] = self.buy()
+                    interval_last_data["active_buy"] = True
+                    interval_last_data["last_action_datetime"] = strategy_result[-1][0]
+                    logger.info("buy interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
+                if strategy_result[-1][3] == "SELL" and interval_last_data["active_buy"] is True:
+                    self.sell(interval_last_data["last_buy_quantity"])
+                    interval_last_data["active_buy"] = False
+                    interval_last_data["last_action_datetime"] = strategy_result[-1][0]
+                    logger.info("sell interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
 
     def buy(self):
         quantity = self.min_quantity * self.option.above_multiple
