@@ -71,6 +71,8 @@ class Trader:
             klines = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.get_klines)(symbol=self.option.symbol, interval=interval, limit=1000)
             macd_strategy = Strategy('MACD', 'CROSS', self.option.symbol, interval, klines)
             strategy_result = macd_strategy.getStrategyResult()
+            if not strategy_result:
+                continue
             if interval_last_data["last_action_datetime"] is None:
                 interval_last_data["last_action_datetime"] = strategy_result[-1][0]
                 logger.info("init interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
