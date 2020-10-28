@@ -88,6 +88,7 @@ class Trader:
 
     def buy(self):
         quantity = self.min_quantity * self.option.above_multiple
+        quantity = self.format_quantity(quantity)
         logger.info("buy quantity:%s", quantity)
         order = self.client.order_market_buy(symbol=self.option.symbol, quantity=quantity)
         logger.info("order %r", order)
@@ -101,6 +102,7 @@ class Trader:
     def format_quantity(self, quantity):
         assert 0 < self.step_size <= 0.1
         quantity = self.step_size * int(math.ceil(quantity / self.step_size))
+        quantity = self.format_quantity(quantity)
         roundn = int(math.fabs(math.floor(math.log(self.step_size, 10))))
         quantity = round(quantity, roundn)
         return quantity
