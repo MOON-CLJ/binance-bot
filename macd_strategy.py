@@ -58,8 +58,6 @@ class Strategy:
                         pass
                     # If both the MACD and signal are well defined, we compare the 2 and decide if a cross has occured
                     else:
-                        if math.fabs(self.indicator_result[0][i]) > 0.1 or math.fabs(self.indicator_result[1][i]) > 0.1:
-                            continue
                         if i >= 5:
                             for j in range(i-5, i+1):
                                 assert self.indicator_result[0][j] - self.indicator_result[1][j] == self.indicator_result[2][j]
