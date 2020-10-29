@@ -59,18 +59,24 @@ class Strategy:
                     # If both the MACD and signal are well defined, we compare the 2 and decide if a cross has occured
                     else:
                         if math.fabs(self.indicator_result[0][i]) > 0.1 or math.fabs(self.indicator_result[1][i]) > 0.1:
-                            if self.indicator_result[0][i] > self.indicator_result[1][i]:
-                                if macdabove == False:
-                                    macdabove = True
-                                    # Appends the timestamp, MACD value at the timestamp, color of dot, buy signal, and the buy price
-                                    cross = [new_time[i], self.indicator_result[0][i], 'go', 'BUY', self.klines[i][4]]
-                                    crosses.append(cross)
-                            else:
-                                if macdabove == True:
-                                    macdabove = False
-                                    # Appends the timestamp, MACD value at the timestamp, color of dot, sell signal, and the sell price
-                                    cross = [new_time[i], self.indicator_result[0][i], 'ro', 'SELL', self.klines[i][4]]
-                                    crosses.append(cross)
+                            continue
+                        if i >= 5:
+                            for j in range(i-5, i+1):
+                                assert self.indicator_result[0][j] - self.indicator_result[1][j] == self.indicator_result[2][j]
+                            if np.std([self.indicator_result[2][j] for j in range(i-5, i+1)], ddof=1) < 0.1:
+                                continue
+                        if self.indicator_result[0][i] > self.indicator_result[1][i]:
+                            if macdabove == False:
+                                macdabove = True
+                                # Appends the timestamp, MACD value at the timestamp, color of dot, buy signal, and the buy price
+                                cross = [new_time[i], self.indicator_result[0][i], 'go', 'BUY', self.klines[i][4]]
+                                crosses.append(cross)
+                        elif self.indicator_result[0][i] < self.indicator_result[1][i]:
+                            if macdabove == True:
+                                macdabove = False
+                                # Appends the timestamp, MACD value at the timestamp, color of dot, sell signal, and the sell price
+                                cross = [new_time[i], self.indicator_result[0][i], 'ro', 'SELL', self.klines[i][4]]
+                                crosses.append(cross)
                 return crosses
 
             else:
