@@ -60,9 +60,12 @@ class Strategy:
                     else:
                         if i >= 5:
                             for j in range(i-5, i+1):
+                                if np.isnan(self.indicator_result[0][j]) or np.isnan(self.indicator_result[1][j]):
+                                    break
                                 assert self.indicator_result[0][j] - self.indicator_result[1][j] == self.indicator_result[2][j]
-                            if np.std([self.indicator_result[2][j] for j in range(i-5, i+1)], ddof=1) < 0.1:
-                                continue
+                            else:
+                                if np.std([self.indicator_result[2][j] for j in range(i-5, i+1)], ddof=1) < 0.1:
+                                    continue
                         if self.indicator_result[0][i] > self.indicator_result[1][i]:
                             if macdabove == False:
                                 macdabove = True
