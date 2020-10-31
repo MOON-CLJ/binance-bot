@@ -2,6 +2,7 @@ import sys
 import logging
 import logging.handlers
 import time
+import datetime
 import math
 import argparse
 
@@ -80,7 +81,7 @@ class Trader:
             if interval_last_data["last_action_datetime"] is None:
                 interval_last_data["last_action_datetime"] = strategy_result[-1][0]
                 logger.info("init interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
-            if strategy_result[-1][0] > interval_last_data["last_action_datetime"]:
+            if strategy_result[-1][0] > interval_last_data["last_action_datetime"] and strategy_result[-1][0] > datetime.datetime.fromtimestamp(time.time()-60, tz=datetime.timezone(datetime.timedelta(seconds=8*3600))):
                 if strategy_result[-1][3] == "BUY" and interval_last_data["active_buy"] is False:
                     interval_last_data["last_buy_quantity"], interval_last_data["last_buy_price"] = self.order_market_buy()
                     interval_last_data["active_buy"] = True
