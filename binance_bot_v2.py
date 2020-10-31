@@ -55,6 +55,7 @@ class Trader:
             self.history[interval] = {
                 "active_buy": False,
                 "last_buy_quantity": None,
+                "last_buy_price": None,
                 "last_action_datetime": None,
             }
 
@@ -64,6 +65,9 @@ class Trader:
         self.baseAssetPrecision = symbol_info["baseAssetPrecision"]
         assert self.baseAssetPrecision >= 4
         self.filters = {filter["filterType"]: filter for filter in symbol_info["filters"]}
+
+    def format_price(self, price, formatter=math.floor):
+        return self.min_price + float(self.tick_size * formatter(float(price - self.min_price) / self.tick_size))
 
     def action(self):
         for interval in self.option.interval.split(","):
@@ -78,27 +82,40 @@ class Trader:
                 logger.info("init interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
             if strategy_result[-1][0] > interval_last_data["last_action_datetime"]:
                 if strategy_result[-1][3] == "BUY" and interval_last_data["active_buy"] is False:
-                    interval_last_data["last_buy_quantity"] = self.buy()
+                    interval_last_data["last_buy_quantity"], interval_last_data["last_buy_price"] = self.order_market_buy()
                     interval_last_data["active_buy"] = True
                     interval_last_data["last_action_datetime"] = strategy_result[-1][0]
                     logger.info("buy interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
                 if strategy_result[-1][3] == "SELL" and interval_last_data["active_buy"] is True:
-                    self.sell(interval_last_data["last_buy_quantity"])
+                    if float(strategy_result[-1][4]) < interval_last_data["last_buy_price"] * 1.003:
+                        profitableSellingPrice = interval_last_data["last_buy_price"] * 1.003
+                    else:
+                        profitableSellingPrice = float(strategy_result[-1][4])
+                    profitableSellingPrice = self.format_price(profitableSellingPrice, formatter=math.ceil)
+
+                    self.order_limit_sell(interval_last_data["last_buy_quantity"], profitableSellingPrice)
                     interval_last_data["active_buy"] = False
                     interval_last_data["last_action_datetime"] = strategy_result[-1][0]
                     logger.info("sell interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
 
-    def buy(self):
+    def order_market_buy(self):
         quantity = self.min_quantity * self.option.above_multiple
         quantity = self.format_quantity(quantity)
         logger.info("buy quantity:%s", quantity)
         order = self.client.order_market_buy(symbol=self.option.symbol, quantity=quantity)
         logger.info("order %r", order)
-        return quantity
+        if len(order["fills"]) > 1:
+            price = sum([float(i["price"]) * float(i["qty"]) for i in order["fills"]]) / sum([float(i["qty"]) for i in order["fills"]])
+        else:
+            price = float(order["fills"][0]["price"])
+        logger.info("last_buy_price:%r", price)
+        return quantity, price
 
-    def sell(self, quantity):
+    def order_limit_sell(self, quantity, profitableSellingPrice):
+        profitableSellingPriceStr = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision-2)
         logger.info("sell quantity:%s", quantity)
-        order = self.client.order_market_sell(symbol=self.option.symbol, quantity=quantity)
+        logger.info("profitableSellingPrice:%r", profitableSellingPriceStr)
+        order = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.order_limit_sell)(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPriceStr)
         logger.info("order %r", order)
 
     def format_quantity(self, quantity):
@@ -115,13 +132,19 @@ class Trader:
         lastBid = float(bids[0][0])
 
         minQty = float(self.filters['LOT_SIZE']['minQty'])
+        minPrice = float(self.filters['PRICE_FILTER']['minPrice'])
         minNotional = float(self.filters['MIN_NOTIONAL']['minNotional'])
 
         # stepSize defines the intervals that a quantity/icebergQty can be increased/decreased by.
         stepSize = float(self.filters['LOT_SIZE']['stepSize'])
 
+        # tickSize defines the intervals that a price/stopPrice can be increased/decreased by
+        tickSize = float(self.filters['PRICE_FILTER']['tickSize'])
+
         # set
+        self.tick_size = tickSize
         self.step_size = stepSize
+        self.min_price = minPrice
 
         quantity = minNotional / lastBid
 
