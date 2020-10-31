@@ -1,6 +1,6 @@
 ETHUSDT:
 	docker run -it --name ETHUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol ETHUSDT --interval 4h,6h,8h,12h,1d,3d,1w --above_multiple 2
+		python binance_bot_v2.py --symbol ETHUSDT --interval 4h,6h,1d,1w --above_multiple 2
 
 DOTUSDT:
 	docker run -it --name DOTUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
@@ -8,7 +8,7 @@ DOTUSDT:
 
 BTCUSDT:
 	docker run -it --name BTCUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol BTCUSDT --interval 4h,6h,8h,12h,1d,3d,1w --above_multiple 2
+		python binance_bot_v2.py --symbol BTCUSDT --interval 2h,4h,6h,8h,12h,1d,3d,1w --above_multiple 2
 
 YFIIUSDT:
 	docker run -it --name YFIIUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
