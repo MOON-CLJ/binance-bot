@@ -115,7 +115,7 @@ class Trader:
         profitableSellingPriceStr = "{:0.0{}f}".format(profitableSellingPrice, self.baseAssetPrecision-2)
         logger.info("sell quantity:%s", quantity)
         logger.info("profitableSellingPrice:%r", profitableSellingPriceStr)
-        order = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)(self.client.order_limit_sell)(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPriceStr)
+        order = retry(wait_exponential_multiplier=1000, wait_exponential_max=10000, stop_max_attempt_number=3)(self.client.order_limit_sell)(symbol=self.option.symbol, quantity=quantity, price=profitableSellingPriceStr)
         logger.info("order %r", order)
 
     def format_quantity(self, quantity):
