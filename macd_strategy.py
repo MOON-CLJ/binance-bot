@@ -72,7 +72,7 @@ class Strategy:
                                 # Appends the timestamp, MACD value at the timestamp, color of dot, buy signal, and the buy price
                                 cross = [new_time[i], self.indicator_result[0][i], 'go', 'BUY', self.klines[i][4]]
                                 crosses.append(cross)
-                        elif self.indicator_result[0][i] < self.indicator_result[1][i]:
+                        else:
                             if macdabove == True:
                                 macdabove = False
                                 # Appends the timestamp, MACD value at the timestamp, color of dot, sell signal, and the sell price
