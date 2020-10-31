@@ -103,12 +103,13 @@ if __name__ == '__main__':
     symbol = option.symbol
     interval = option.interval
     intervals = interval.split(",")
+    startTime = calendar.timegm((datetime.datetime.now() - datetime.timedelta(days=90)).timetuple()) * 1000
     if len(intervals) == 1:
         klines = client.get_klines(
-            symbol=symbol, interval=interval, limit=1000,
-            startTime=calendar.timegm((datetime.datetime.now() - datetime.timedelta(days=90)).timetuple()) * 1000,
-            endTime=calendar.timegm(datetime.datetime.now().timetuple()) * 1000),
+            symbol=symbol, interval=interval, limit=1000)
+        assert len(klines) == 1
         klines = klines[0]
+        klines = [line for line in klines if line[0] >= startTime]
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
@@ -119,10 +120,10 @@ if __name__ == '__main__':
         profitable_intervals = []
         for interval in intervals:
             klines = client.get_klines(
-                symbol=symbol, interval=interval, limit=1000,
-                startTime=calendar.timegm((datetime.datetime.now() - datetime.timedelta(days=90)).timetuple()) * 1000,
-                endTime=calendar.timegm(datetime.datetime.now().timetuple()) * 1000),
+                symbol=symbol, interval=interval, limit=1000)
+            assert len(klines) == 1
             klines = klines[0]
+            klines = [line for line in klines if line[0] >= startTime]
             macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
             time = macd_strategy.getTime()
             macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
