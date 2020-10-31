@@ -107,8 +107,6 @@ if __name__ == '__main__':
     if len(intervals) == 1:
         klines = client.get_klines(
             symbol=symbol, interval=interval, limit=1000)
-        assert len(klines) == 1
-        klines = klines[0]
         klines = [line for line in klines if line[0] >= startTime]
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
         time = macd_strategy.getTime()
@@ -121,8 +119,6 @@ if __name__ == '__main__':
         for interval in intervals:
             klines = client.get_klines(
                 symbol=symbol, interval=interval, limit=1000)
-            assert len(klines) == 1
-            klines = klines[0]
             klines = [line for line in klines if line[0] >= startTime]
             macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
             time = macd_strategy.getTime()
