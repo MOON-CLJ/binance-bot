@@ -1,4 +1,6 @@
 import argparse
+import calendar
+import datetime
 
 from binance.client import Client
 
@@ -98,7 +100,9 @@ if __name__ == '__main__':
     interval = option.interval
     intervals = interval.split(",")
     if len(intervals) == 1:
-        klines = client.get_klines(symbol=symbol, interval=interval, limit=1000)
+        klines = client.get_klines(
+            symbol=symbol, interval=interval, limit=1000,
+            startTime=calendar.timegm((datetime.datetime.now() - datetime.timedelta(days=90)).timetuple()))
         macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
         time = macd_strategy.getTime()
         macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
@@ -108,7 +112,9 @@ if __name__ == '__main__':
         macd_backtests = []
         profitable_intervals = []
         for interval in intervals:
-            klines = client.get_klines(symbol=symbol, interval=interval, limit=1000)
+            klines = client.get_klines(
+                symbol=symbol, interval=interval, limit=1000,
+                startTime=calendar.timegm((datetime.datetime.now() - datetime.timedelta(days=90)).timetuple()))
             macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
             time = macd_strategy.getTime()
             macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
