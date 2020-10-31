@@ -106,12 +106,15 @@ if __name__ == '__main__':
             macd_backtest.printResults()
     else:
         macd_backtests = []
+        profitable_intervals = []
         for interval in intervals:
             klines = client.get_klines(symbol=symbol, interval=interval, limit=1000)
             macd_strategy = Strategy('MACD', 'CROSS', symbol, interval, klines)
             time = macd_strategy.getTime()
             macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
             macd_backtests.append(macd_backtest)
+            if macd_backtest.amount > 10500:
+                profitable_intervals.append(interval)
             """
             if macd_backtest.amount > 11000:
                 macd_strategy.plotIndicator()
@@ -124,3 +127,4 @@ if __name__ == '__main__':
             if macd_backtest.num_trades > 0:
                 macd_backtest.printResults()
                 cnt += 1
+        print("Profitable intervals:", ",".join(profitable_intervals))
