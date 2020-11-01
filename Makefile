@@ -8,7 +8,7 @@ DOTUSDT:
 
 BTCUSDT:
 	docker run -it --name BTCUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol BTCUSDT --interval 30m,15m --above_multiple 2
+		python binance_bot_v2.py --symbol BTCUSDT --interval 2h,4h,6h,30m,15m --above_multiple 2
 
 BNBUSDT:
 	docker run -it --name BNBUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
