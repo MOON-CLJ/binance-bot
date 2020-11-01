@@ -82,22 +82,34 @@ class Trader:
                 interval_last_data["last_action_datetime"] = strategy_result[-1][0]
                 logger.info("init interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
             if strategy_result[-1][0] > interval_last_data["last_action_datetime"] and strategy_result[-1][0] > datetime.datetime.fromtimestamp(time.time()-60, tz=datetime.timezone(datetime.timedelta(seconds=8*3600))):
-                if strategy_result[-1][3] == "BUY" and interval_last_data["active_buy"] is False:
-                    interval_last_data["last_buy_quantity"], interval_last_data["last_buy_price"] = self.order_market_buy()
-                    interval_last_data["active_buy"] = True
-                    interval_last_data["last_action_datetime"] = strategy_result[-1][0]
-                    logger.info("buy interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
-                if strategy_result[-1][3] == "SELL" and interval_last_data["active_buy"] is True:
-                    if float(strategy_result[-1][4]) < interval_last_data["last_buy_price"] * 1.003:
-                        profitableSellingPrice = interval_last_data["last_buy_price"] * 1.003
+                if strategy_result[-1][3] == "BUY":
+                    logger.info("** " * 10)
+                    if interval_last_data["active_buy"] is False:
+                        interval_last_data["last_buy_quantity"], interval_last_data["last_buy_price"] = self.order_market_buy()
+                        interval_last_data["active_buy"] = True
+                        interval_last_data["last_action_datetime"] = strategy_result[-1][0]
+                        logger.info("buy interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
                     else:
-                        profitableSellingPrice = float(strategy_result[-1][4])
-                    profitableSellingPrice = self.format_price(profitableSellingPrice, formatter=math.ceil)
+                        logger.info("!! " * 10)
+                        logger.info("not buy, price:%s", strategy_result[-1][4])
+                if strategy_result[-1][3] == "SELL":
+                    logger.info("-- " * 10)
+                    if interval_last_data["active_buy"] is True:
+                        if float(strategy_result[-1][4]) < interval_last_data["last_buy_price"] * 1.003:
+                            logger.info("sell stop loss")
+                            profitableSellingPrice = interval_last_data["last_buy_price"] * 1.003
+                        else:
+                            logger.info("sell profitable")
+                            profitableSellingPrice = float(strategy_result[-1][4])
+                        profitableSellingPrice = self.format_price(profitableSellingPrice, formatter=math.ceil)
 
-                    self.order_limit_sell(interval_last_data["last_buy_quantity"], profitableSellingPrice)
-                    interval_last_data["active_buy"] = False
-                    interval_last_data["last_action_datetime"] = strategy_result[-1][0]
-                    logger.info("sell interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
+                        self.order_limit_sell(interval_last_data["last_buy_quantity"], profitableSellingPrice)
+                        interval_last_data["active_buy"] = False
+                        interval_last_data["last_action_datetime"] = strategy_result[-1][0]
+                        logger.info("sell interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
+                    else:
+                        logger.info("!! " * 10)
+                        logger.info("not sell, price:%s", strategy_result[-1][4])
 
     def order_market_buy(self):
         quantity = self.min_quantity * self.option.above_multiple
