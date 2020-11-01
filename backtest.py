@@ -120,7 +120,7 @@ if __name__ == '__main__':
             time = macd_strategy.getTime()
             macd_backtest = Backtest(10000, time[0], time[len(time) - 1], macd_strategy)
             macd_backtests.append(macd_backtest)
-            if macd_backtest.amount > 10500:
+            if macd_backtest.amount > 10000:
                 profitable_intervals.append(interval)
             """
             if macd_backtest.amount > 11000:
