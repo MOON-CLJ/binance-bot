@@ -33,3 +33,11 @@ LTCUSDT:
 FILUSDT:
 	docker run -it --name FILUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
 		python binance_bot_v2.py --symbol FILUSDT --interval 2h,4h,6h,15m,5m
+
+XMRUSDT:
+	docker run -it --name XMRUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
+		python binance_bot_v2.py --symbol XMRUSDT --interval 8h,12h,1d
+
+DASHUSDT:
+	docker run -it --name DASHUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
+		python binance_bot_v2.py --symbol DASHUSDT --interval 30m,1h
