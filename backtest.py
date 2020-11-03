@@ -6,7 +6,6 @@ import logging
 from binance.client import Client
 
 import config
-from macd_strategy import Strategy
 
 
 def setup_logger():
@@ -24,9 +23,12 @@ def setup_logger():
     logger.addHandler(stream_handler)
 
 
+setup_logger()
+from macd_strategy import Strategy
+
+
 class Backtest:
     def __init__(self, starting_amount, start_datetime, end_datetime, strategy):
-        setup_logger()
         # Starting amount
         self.starting_amount = starting_amount
         # Number of trades
