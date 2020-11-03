@@ -1,6 +1,7 @@
 import argparse
 import calendar
 import datetime
+import logging
 
 from binance.client import Client
 
@@ -8,8 +9,24 @@ import config
 from macd_strategy import Strategy
 
 
+def setup_logger():
+    format = '%(asctime)s %(levelname)s %(name)s: %(message)s'
+    formatter = logging.Formatter(format)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(formatter)
+
+    logger.addHandler(stream_handler)
+
+
 class Backtest:
     def __init__(self, starting_amount, start_datetime, end_datetime, strategy):
+        setup_logger()
         # Starting amount
         self.starting_amount = starting_amount
         # Number of trades
