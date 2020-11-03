@@ -67,8 +67,8 @@ class Strategy:
                                 assert self.indicator_result[0][j] - self.indicator_result[1][j] == self.indicator_result[2][j]
                             else:
                                 std = np.std([self.indicator_result[2][j] for j in range(i-5, i+1)], ddof=1)
-                                if std < 0.1:
-                                    logger.info("%r std:%s time:%s", [self.indicator_result[2][j] for j in range(i-5, i+1)], std, new_time[i])
+                                if std < 0.01:
+                                    # logger.info("%r std:%s time:%s", [self.indicator_result[2][j] for j in range(i-5, i+1)], std, new_time[i])
                                     continue
                         if self.indicator_result[0][i] > self.indicator_result[1][i]:
                             if macdabove == False:
