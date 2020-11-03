@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, timezone
-import math
 
 import talib as ta
 import matplotlib.pyplot as plt
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 class Strategy:
@@ -64,7 +65,9 @@ class Strategy:
                                     break
                                 assert self.indicator_result[0][j] - self.indicator_result[1][j] == self.indicator_result[2][j]
                             else:
-                                if np.std([self.indicator_result[2][j] for j in range(i-5, i+1)], ddof=1) < 0.1:
+                                std = np.std([self.indicator_result[2][j] for j in range(i-5, i+1)], ddof=1)
+                                if std < 0.1:
+                                    logger.info("%r std:%s time:%s", [self.indicator_result[2][j] for j in range(i-5, i+1)], std, new_time[i])
                                     continue
                         if self.indicator_result[0][i] > self.indicator_result[1][i]:
                             if macdabove == False:
