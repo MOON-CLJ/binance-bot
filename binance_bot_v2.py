@@ -91,7 +91,7 @@ class Trader:
                         logger.info("buy interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
                     else:
                         logger.info("!! " * 10)
-                        logger.info("not buy, price:%s", strategy_result[-1][4])
+                        logger.info("not buy interval:%s price:%s", interval, strategy_result[-1][4])
                 if strategy_result[-1][3] == "SELL":
                     logger.info("-- " * 10)
                     if interval_last_data["active_buy"] is True:
@@ -109,7 +109,7 @@ class Trader:
                         logger.info("sell interval:%s last_action_datetime:%s", interval, interval_last_data["last_action_datetime"].isoformat())
                     else:
                         logger.info("!! " * 10)
-                        logger.info("not sell, price:%s", strategy_result[-1][4])
+                        logger.info("not sell interval:%s price:%s", interval, strategy_result[-1][4])
 
     def order_market_buy(self):
         quantity = self.min_quantity * self.option.above_multiple
