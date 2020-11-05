@@ -14,10 +14,6 @@ BNBUSDT:
 	docker run -it --name BNBUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
 		python binance_bot_v2.py --symbol BNBUSDT --interval 6h,4h,30m,15m,5m --above_multiple 2
 
-YFIIUSDT:
-	docker run -it --name YFIIUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol YFIIUSDT --interval 4h,6h,15m,5m
-
 LINKUSDT:
 	docker run -it --name LINKUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
 		python binance_bot_v2.py --symbol LINKUSDT --interval 6h,15m,5m
