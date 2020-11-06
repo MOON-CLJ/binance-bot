@@ -60,14 +60,14 @@ class Strategy:
                         pass
                     # If both the MACD and signal are well defined, we compare the 2 and decide if a cross has occured
                     else:
-                        if i >= 100:
-                            for j in range(i-100, i+1):
+                        if i >= 10:
+                            for j in range(i-10, i+1):
                                 if np.isnan(self.indicator_result[0][j]) or np.isnan(self.indicator_result[1][j]):
                                     break
                                 assert self.indicator_result[0][j] - self.indicator_result[1][j] == self.indicator_result[2][j]
                             else:
-                                std_fast = np.std([self.indicator_result[2][j] for j in range(i - 62, i + 1)], ddof=1)
-                                std_slow = np.std([self.indicator_result[2][j] for j in range(i - 100, i + 1)], ddof=1)
+                                std_fast = np.std([self.indicator_result[2][j] for j in range(i - 4, i + 1)], ddof=1)
+                                std_slow = np.std([self.indicator_result[2][j] for j in range(i - 10, i + 1)], ddof=1)
                                 if std_fast < std_slow:
                                     # logger.info("%r std:%s time:%s", [self.indicator_result[2][j] for j in range(i-5, i+1)], std, new_time[i])
                                     continue
