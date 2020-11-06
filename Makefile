@@ -1,18 +1,18 @@
 ETHUSDT:
 	docker run -it --name ETHUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol ETHUSDT --interval 6h,4h,15m,5m --above_multiple 2
+		python binance_bot_v2.py --symbol ETHUSDT --interval 5m,30m,1h,2h,4h,6h,8h,12h,1d --above_multiple 2
 
 DOTUSDT:
 	docker run -it --name DOTUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol DOTUSDT --interval 30m,15m,5m
+		python binance_bot_v2.py --symbol DOTUSDT --interval 3m,1h,2h,4h,12h,1d
 
 BTCUSDT:
 	docker run -it --name BTCUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol BTCUSDT --interval 2h,4h,6h,30m,15m --above_multiple 2
+		python binance_bot_v2.py --symbol BTCUSDT --interval 5m,30m,1h,2h,4h,6h,8h,12h,1d --above_multiple 2
 
 BNBUSDT:
 	docker run -it --name BNBUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
-		python binance_bot_v2.py --symbol BNBUSDT --interval 6h,4h,30m,15m,5m --above_multiple 2
+		python binance_bot_v2.py --symbol BNBUSDT --interval 3m,2h,4h,6h,8h,12h,1d --above_multiple 2
 
 LINKUSDT:
 	docker run -it --name LINKUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
