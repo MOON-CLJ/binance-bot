@@ -18,6 +18,14 @@ LINKUSDT:
 	docker run -it --name LINKUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
 		python binance_bot_v2.py --symbol LINKUSDT --interval 6h,15m,5m
 
+YFIIUSDT:
+	docker run -it --name YFIIUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
+		python binance_bot_v2.py --symbol YFIIUSDT --interval 5m
+
+YFIUSDT:
+	docker run -it --name YFIUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
+		python binance_bot_v2.py --symbol YFIUSDT --interval 5m
+
 TRXUSDT:
 	docker run -it --name TRXUSDT_v2 -v /root/binance-bot:/binance-bot --rm traderv2 \
 		python binance_bot_v2.py --symbol TRXUSDT --interval 15m,5m
